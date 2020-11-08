@@ -38,12 +38,6 @@ kotlin {
 
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
 
         val jvmMain by getting {
             dependencies {
@@ -74,9 +68,6 @@ kotlin {
                 implementation(npm("styled-components", "~5.1.1"))
                 implementation(npm("inline-style-prefixer", "~6.0.0"))
 
-                //table
-                implementation(npm("@opuscapita/react-grid", "9.3.4"))
-                implementation(npm("react-immutable-proptypes", "2.2.0"))
             }
         }
     }
