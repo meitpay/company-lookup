@@ -1,6 +1,7 @@
 package service
 
 import Organization
+import io.sentry.Sentry
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.*
@@ -30,7 +31,11 @@ class BregProvider {
         if (response.code == 200) {
             return format.decodeFromString(response.body!!.string())
         } else {
-            // TODO: 09.11.2020 log the error
+            Sentry.captureMessage(
+                "Failed to get organization by orgNumber ${orgNumber}\n" +
+                        "Brreg http response code = ${response.code} \n" +
+                        "Brreg message = ${response.message}"
+            )
         }
         response.close()
         return Organization()

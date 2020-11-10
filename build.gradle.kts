@@ -50,6 +50,7 @@ kotlin {
                 implementation("com.github.nwillc:poink:0.4.6")
                 implementation("io.ktor:ktor-auth:$ktorVersion")
                 implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
+                implementation("io.sentry:sentry:3.1.0")
             }
         }
 
