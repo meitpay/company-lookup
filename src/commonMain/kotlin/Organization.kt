@@ -29,7 +29,7 @@ data class Organization(
         }
 
         fun get(): MutableList<Organization> {
-            return organization
+            return organization.filter { it.organizationNumber != ERROR_MISSING_FIELD }.toMutableList()
         }
 
         fun clear() {

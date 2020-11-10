@@ -33,8 +33,9 @@ class BregProvider {
         } else {
             Sentry.captureMessage(
                 "Failed to get organization by orgNumber ${orgNumber}\n" +
-                        "Brreg http response code = ${response.code} \n" +
-                        "${response.body}"
+                        "Brreg http response code = ${response.code}\n" +
+                        "Brreg message = ${response.message}\n" +
+                        "Brreg body = ${response.body}"
             )
         }
         response.close()

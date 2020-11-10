@@ -19,6 +19,9 @@ import service.FileIO
 import java.io.File
 
 fun main(args: Array<String>) {
+    Sentry.init { options: SentryOptions ->
+        options.dsn = ConfigFactory.load().getString("sentry.url")
+    }
 
     embeddedServer(
         Netty,
@@ -27,10 +30,6 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    Sentry.init { options: SentryOptions ->
-        options.dsn = ConfigFactory.load().getString("sentry.url")
-    }
-
     install(Authentication) {
         jwt {
             realm = "Ktor auth0"
