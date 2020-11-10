@@ -1,5 +1,8 @@
-import service.BregProvider
+import com.auth0.jwk.UrlJwkProvider
+import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -9,19 +12,36 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import service.BregProvider
 import service.FileIO
 import java.io.File
 
-fun main() {
+fun main(args: Array<String>) {
+
     embeddedServer(
         Netty,
-        port = 8080,
-        watchPaths = listOf("CommonMain", "JsMain", "JvmMain"),
-        module = Application::module
+        commandLineEnvironment(args)
     ).start(wait = true)
 }
 
 fun Application.module() {
+
+    install(Authentication) {
+        jwt {
+            realm = "Ktor auth0"
+            skipWhen { ConfigFactory.load().getString("ktor.deployment.environment") == "dev" }
+            verifier(UrlJwkProvider(ConfigFactory.load().getString("auth0.issuer")))
+            validate { credential ->
+                val payload = credential.payload
+                if (payload.audience.contains(ConfigFactory.load().getString("auth0.audience"))) {
+                    JWTPrincipal(payload)
+                } else {
+                    null
+                }
+            }
+        }
+    }
+
     install(ContentNegotiation) {
         json()
     }
@@ -50,73 +70,73 @@ fun Application.module() {
         static("/") {
             resources("")
         }
-
-        route(Organization.path) {
-            get {
-                val file = FileIO()
-                val ids = file.readFile()
-                val breg = BregProvider()
-                call.respond(breg.organizationList(ids))
-            }
-        }
-
-        route(FileCompanion.downloadPath) {
-            get {
-                try {
-                    val fileIO = FileIO()
-                    val file = fileIO.getFile("tmp/output.xlsx")
-                    call.response.header("Content-Disposition", "attachment; filename=\"${file.name}\"")
-                    call.respondFile(file)
-                    file.delete()
-                } catch (e: Exception) {
-                    println(e)
+        authenticate {
+            route(Organization.path) {
+                get {
+                    val file = FileIO()
+                    val ids = file.readFile()
+                    val breg = BregProvider()
+                    call.respond(breg.organizationList(ids))
                 }
-                call.respond(HttpStatusCode.BadRequest)
             }
-        }
 
-        route(FileCompanion.generatePath) {
-            post {
-                val file = FileIO()
-                try {
-                    file.generateFile(call.receive())
-                    call.respond(HttpStatusCode.OK)
-                } catch (e: Exception) {
-                    println(e)
+            route(FileCompanion.downloadPath) {
+                get {
+                    try {
+                        val fileIO = FileIO()
+                        val file = fileIO.getFile("tmp/output.xlsx")
+                        call.response.header("Content-Disposition", "attachment; filename=\"${file.name}\"")
+                        call.respondFile(file)
+                        file.delete()
+                    } catch (e: Exception) {
+                        println(e)
+                    }
+                    call.respond(HttpStatusCode.BadRequest)
                 }
-                call.respond(HttpStatusCode.BadRequest)
             }
-        }
 
-        route(FileCompanion.uploadPath) {
-            post {
-                try {
-                    val multipart = call.receiveMultipart()
-                    multipart.forEachPart { part ->
-                        if (part is PartData.FileItem) {
-                            val name = part.originalFileName!!
-                            val fileIO = FileIO()
-                            if (fileIO.fileExists("tmp/{$name}")) {
-                                val file = File("tmp{$name}")
-                                file.delete()
-                            }
-                            val file = File("tmp/$name")
+            route(FileCompanion.generatePath) {
+                post {
+                    val file = FileIO()
+                    try {
+                        file.generateFile(call.receive())
+                        call.respond(HttpStatusCode.OK)
+                    } catch (e: Exception) {
+                        println(e)
+                    }
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
 
-                            part.streamProvider().use { its ->
-                                file.outputStream().buffered().use {
-                                    its.copyTo(it)
+            route(FileCompanion.uploadPath) {
+                post {
+                    try {
+                        val multipart = call.receiveMultipart()
+                        multipart.forEachPart { part ->
+                            if (part is PartData.FileItem) {
+                                val name = part.originalFileName!!
+                                val fileIO = FileIO()
+                                if (fileIO.fileExists("tmp/{$name}")) {
+                                    val file = File("tmp{$name}")
+                                    file.delete()
+                                }
+                                val file = File("tmp/$name")
+
+                                part.streamProvider().use { its ->
+                                    file.outputStream().buffered().use {
+                                        its.copyTo(it)
+                                    }
                                 }
                             }
+                            part.dispose()
                         }
-                        part.dispose()
+                        call.respond(HttpStatusCode.OK)
+                    } catch (e: Exception) {
+                        println(e)
                     }
-                    call.respond(HttpStatusCode.OK)
-                } catch (e: Exception) {
-                    println(e)
+                    call.respond(HttpStatusCode.BadRequest)
                 }
-                call.respond(HttpStatusCode.BadRequest)
             }
         }
     }
 }
-
