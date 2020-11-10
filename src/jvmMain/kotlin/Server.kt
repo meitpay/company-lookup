@@ -12,11 +12,16 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.sentry.Sentry
+import io.sentry.SentryOptions
 import service.BregProvider
 import service.FileIO
 import java.io.File
 
 fun main(args: Array<String>) {
+    Sentry.init { options: SentryOptions ->
+        options.dsn = ConfigFactory.load().getString("sentry.url")
+    }
 
     embeddedServer(
         Netty,
@@ -25,7 +30,6 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-
     install(Authentication) {
         jwt {
             realm = "Ktor auth0"
@@ -87,9 +91,9 @@ fun Application.module() {
                         val file = fileIO.getFile("tmp/output.xlsx")
                         call.response.header("Content-Disposition", "attachment; filename=\"${file.name}\"")
                         call.respondFile(file)
-                        file.delete()
+//                        file.delete()
                     } catch (e: Exception) {
-                        println(e)
+                        Sentry.captureException(e)
                     }
                     call.respond(HttpStatusCode.BadRequest)
                 }
@@ -102,7 +106,7 @@ fun Application.module() {
                         file.generateFile(call.receive())
                         call.respond(HttpStatusCode.OK)
                     } catch (e: Exception) {
-                        println(e)
+                        Sentry.captureException(e)
                     }
                     call.respond(HttpStatusCode.BadRequest)
                 }
@@ -132,7 +136,7 @@ fun Application.module() {
                         }
                         call.respond(HttpStatusCode.OK)
                     } catch (e: Exception) {
-                        println(e)
+                        Sentry.captureException(e)
                     }
                     call.respond(HttpStatusCode.BadRequest)
                 }
