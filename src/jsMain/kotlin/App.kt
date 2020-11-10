@@ -1,10 +1,13 @@
+import api.generateFile
+import api.fetchAll
+import api.uploadFile
+import handler.InputComponent
+import kotlinext.js.jsObject
 import react.*
 import react.dom.*
 import kotlinx.coroutines.*
 import kotlinx.css.*
-import kotlinx.css.properties.TextDecoration
 import kotlinx.html.*
-import kotlinx.html.js.onClickFunction
 import styled.*
 
 private val scope = MainScope()
@@ -18,8 +21,38 @@ val App = functionalComponent<RProps> { _ ->
             setOrganizationList(fetchAll())
         }
     }
-    fileForm()
-    dataGrid(organizationList)
+    child(
+        InputComponent,
+        props = jsObject {
+            onSubmit = { file ->
+                scope.launch {
+                    console.log("output = onSubmit")
+                    uploadFile(file)
+                    setOrganizationList(fetchAll())
+                }
+            }
+            downloadFile = {
+                run {
+                    scope.launch {
+                        console.log("download file")
+                        api.downloadFile()
+                    }
+                }
+            }
+            generateFile = {
+                run {
+                    scope.launch {
+                        console.log("generate file")
+                        generateFile(organizationList)
+                    }
+                }
+            }
+        }
+    )
+
+    if (organizationList.isNotEmpty()) {
+        dataGrid(organizationList)
+    }
 }
 
 private fun RBuilder.dataGrid(organizationList: List<Organization>) {
@@ -32,83 +65,41 @@ private fun RBuilder.dataGrid(organizationList: List<Organization>) {
                 borderCollapse = BorderCollapse.collapse
             }
 
-            styledTr {
-                css {
-                    border = "2px solid black"
-                    borderCollapse = BorderCollapse.collapse
-                    backgroundColor = Color.dimGrey
-                }
-                tableHeader("ID")
-                tableHeader("Name")
-                tableHeader("Activity Code")
-                tableHeader("Home Page")
-                tableHeader("Number of Employees")
-                tableHeader("Commune")
-            }
-
-            for (organization in organizationList) {
+            thead {
                 styledTr {
                     css {
                         border = "2px solid black"
                         borderCollapse = BorderCollapse.collapse
+                        backgroundColor = Color.dimGrey
                     }
+                    tableHeader("ID")
+                    tableHeader("Name")
+                    tableHeader("Activity Code")
+                    tableHeader("Home Page")
+                    tableHeader("Number of Employees")
+                    tableHeader("Commune")
+                }
+            }
 
-                    tableData(organization.organizationNumber)
-                    tableData(organization.name)
-                    tableData(organization.activityCode.activityCode)
-                    tableData(organization.homePage)
-                    tableData(organization.employees.toString())
-                    tableData(organization.postalAddress.commune)
+            tbody {
+                for (organization in organizationList) {
+                    styledTr {
+                        css {
+                            border = "2px solid black"
+                            borderCollapse = BorderCollapse.collapse
+                        }
 
+                        tableData(organization.organizationNumber)
+                        tableData(organization.name)
+                        tableData(organization.activityCode.activityCode)
+                        tableData(organization.homePage)
+                        tableData(organization.employees.toString())
+                        tableData(organization.postalAddress.commune)
+
+                    }
                 }
             }
         }
-    }
-}
-
-private fun RBuilder.fileForm() {
-    form {
-        styledInput {
-            styledInput(Color.lightGreen)
-            attrs {
-                type = InputType.file
-                name = "upload"
-                id = "my-upload-btn"
-                onClickFunction = {
-                    console.log("upload button clicked")
-                }
-            }
-        }
-
-        styledInput {
-            styledInput(Color.lightBlue)
-            css {
-                float = kotlinx.css.Float.right
-            }
-            attrs {
-                type = InputType.submit
-                name = "download"
-                id = "download-btn"
-                onClickFunction = {
-                    console.log("download button clicked")
-                }
-            }
-        }
-    }
-}
-
-private fun StyledDOMBuilder<INPUT>.styledInput(inputColor: Color) {
-    css {
-        backgroundColor = inputColor
-        border = "none"
-        color = Color.white
-        padding = "15px 32px"
-        textAlign = TextAlign.center
-        textDecoration = TextDecoration.none
-        display = Display.inlineBlock;
-        fontSize = LinearDimension("16px")
-        margin = "4px 2px"
-        cursor = Cursor.pointer
     }
 }
 
