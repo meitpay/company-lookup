@@ -48,6 +48,8 @@ kotlin {
                 implementation("io.ktor:ktor-websockets:$ktorVersion")
                 implementation("com.squareup.okhttp3:okhttp:4.9.0")
                 implementation("com.github.nwillc:poink:0.4.6")
+                implementation("io.ktor:ktor-auth:$ktorVersion")
+                implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
             }
         }
 
@@ -67,6 +69,7 @@ kotlin {
                 implementation("org.jetbrains:kotlin-styled:1.0.0-pre.110-kotlin-1.4.0")
                 implementation(npm("styled-components", "~5.1.1"))
                 implementation(npm("inline-style-prefixer", "~6.0.0"))
+                implementation(npm("@auth0/auth0-react", "1.2.0"))
 
             }
         }

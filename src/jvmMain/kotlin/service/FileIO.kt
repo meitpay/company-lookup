@@ -35,7 +35,6 @@ class FileIO {
                     for (x in 0..lastRowNum) {
                         val currentValue = getRow(x).getCell(0)
                         try {
-                            println(currentValue.numericCellValue.toInt())
                             orgNumbers.add(currentValue.numericCellValue.toInt())
                         } catch (e: IllegalStateException) {
                             println(e)

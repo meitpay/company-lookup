@@ -9,6 +9,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.browser.window
+import kotlinx.coroutines.await
 import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.xhr.FormData
@@ -33,7 +34,7 @@ fun downloadFile() {
     window.open(endpoint + FileCompanion.downloadPath)
 }
 
-fun uploadFile(file: File) {
+suspend fun uploadFile(file: File) {
     if (isValid(file.type)) {
         val form = FormData()
         form.append("file", file, "input.xlsx")
@@ -41,6 +42,6 @@ fun uploadFile(file: File) {
             method = "POST"
             headers = ContentType.MultiPart.FormData
             body = form
-        })
+        }).await()
     }
 }

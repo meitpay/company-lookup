@@ -10,7 +10,6 @@ import react.*
 import react.dom.*
 import kotlinx.html.js.*
 import kotlinx.html.InputType
-import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
 import org.w3c.files.File
@@ -52,10 +51,6 @@ val InputComponent = functionalComponent<InputProps> { props ->
             name = "download-file"
             value = "download-file"
             onClickFunction = {
-                console.log(it)
-                val value = (it.target as HTMLButtonElement)
-                console.log(value)
-                console.log(value.value)
                 it.preventDefault()
                 props.downloadFile()
             }

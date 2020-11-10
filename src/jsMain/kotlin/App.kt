@@ -26,7 +26,6 @@ val App = functionalComponent<RProps> { _ ->
         props = jsObject {
             onSubmit = { file ->
                 scope.launch {
-                    console.log("output = onSubmit")
                     uploadFile(file)
                     setOrganizationList(fetchAll())
                 }
@@ -34,7 +33,6 @@ val App = functionalComponent<RProps> { _ ->
             downloadFile = {
                 run {
                     scope.launch {
-                        console.log("download file")
                         api.downloadFile()
                     }
                 }
@@ -42,7 +40,6 @@ val App = functionalComponent<RProps> { _ ->
             generateFile = {
                 run {
                     scope.launch {
-                        console.log("generate file")
                         generateFile(organizationList)
                     }
                 }
@@ -106,6 +103,7 @@ private fun RBuilder.dataGrid(organizationList: List<Organization>) {
 private fun RDOMBuilder<TR>.tableHeader(title: String) {
     styledTh {
         css {
+            color = Color.black
             border = BorderStyle.inherit.toString()
             borderCollapse = BorderCollapse.collapse
             textAlign = TextAlign.start
@@ -118,6 +116,7 @@ private fun RDOMBuilder<TR>.tableHeader(title: String) {
 private fun RDOMBuilder<TR>.tableData(data: String) {
     styledTd {
         css {
+            color = Color.black
             border = BorderStyle.inherit.toString()
             borderCollapse = BorderCollapse.collapse
             textAlign = TextAlign.start
