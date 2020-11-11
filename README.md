@@ -1,6 +1,7 @@
 # company-lookup
 
 ###To run the app
+
 ####mac/linux
 ./gradlew clean build
 ./gradlew run
