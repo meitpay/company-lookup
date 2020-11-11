@@ -31,17 +31,13 @@ val App = functionalComponent<RProps> { _ ->
                 }
             }
             downloadFile = {
-                run {
-                    scope.launch {
-                        api.downloadFile()
-                    }
+                scope.launch {
+                    api.downloadFile()
                 }
             }
             generateFile = {
-                run {
-                    scope.launch {
-                        generateFile(organizationList)
-                    }
+                scope.launch {
+                    generateFile(organizationList)
                 }
             }
         }
