@@ -1,17 +1,21 @@
 # company-lookup
 
-###To run the app
+###
+To run the app
 
-####mac/linux
+####
+mac/linux
 ./gradlew clean build
 ./gradlew run
 
-####windows
+####
+windows
 gradlew.bat clean build
 gradlew.bat run
 
 
-###Auth0
+###
+Auth0
 Currently the backend can be secured (disabled in dev)
 If enabled, you'll get a 401 response when trying to access the API.
 
@@ -43,7 +47,8 @@ curl --request GET \
   --header 'authorization: Bearer YOUR_ACCESS_TOKEN'
   
 
-###Sentry
+###
+Sentry
 Create a free account at https://sentry.io/welcome/
 
 in application.conf we have
