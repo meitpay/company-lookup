@@ -2,26 +2,20 @@ package handler
 
 import FileCompanion.Companion.isValid
 import kotlinx.browser.window
-import kotlinx.css.Color
-import kotlinx.css.Float
-import kotlinx.css.color
-import kotlinx.css.float
+import kotlinx.css.*
 import react.*
-import react.dom.*
 import kotlinx.html.js.*
 import kotlinx.html.InputType
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
 import org.w3c.files.File
 import org.w3c.files.get
-import styled.css
-import styled.styledButton
-import styled.styledInput
+import styled.*
 
 external interface InputProps : RProps {
-    var onSubmit: (File) -> Unit
-    var generateFile: () -> Unit
-    var downloadFile: () -> Unit
+    var onUploadFile: (File) -> Unit
+    var onGenerateFile: () -> Unit
+    var onDownloadFile: () -> Unit
 }
 
 val InputComponent = functionalComponent<InputProps> { props ->
@@ -32,7 +26,7 @@ val InputComponent = functionalComponent<InputProps> { props ->
         it.preventDefault()
         if (isValid(file.type)) {
             setFile(initValue)
-            props.onSubmit(file)
+            props.onUploadFile(file)
         } else {
             window.alert("Not a valid file.")
         }
@@ -46,13 +40,14 @@ val InputComponent = functionalComponent<InputProps> { props ->
     styledButton {
         css {
             float = Float.right
+            cursor = Cursor.pointer
         }
         attrs {
             name = "download-file"
             value = "download-file"
             onClickFunction = {
                 it.preventDefault()
-                props.downloadFile()
+                props.onDownloadFile()
             }
         }
         +"Download File"
@@ -61,24 +56,33 @@ val InputComponent = functionalComponent<InputProps> { props ->
     styledButton {
         css {
             float = Float.right
+            cursor = Cursor.pointer
         }
         attrs {
             name = "generate-file"
             value = "generate-file"
             onClickFunction = {
                 it.preventDefault()
-                props.generateFile()
+                props.onGenerateFile()
             }
         }
         +"Generate File"
     }
 
-    form {
+    styledForm {
         attrs.onSubmitFunction = submitHandler
+
         styledInput(InputType.file) {
-            css.color = Color.whiteSmoke
+            css {
+                cursor = Cursor.pointer
+                color = Color.whiteSmoke
+            }
             attrs.onChangeFunction = changeHandler
         }
-        input(InputType.submit) {}
+        styledInput(InputType.submit) {
+            css {
+                cursor = Cursor.pointer
+            }
+        }
     }
 }
