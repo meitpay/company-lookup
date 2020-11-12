@@ -68,7 +68,7 @@ kotlin {
                 implementation(npm("react-dom", "16.13.1"))
 
                 implementation("org.jetbrains:kotlin-styled:1.0.0-pre.110-kotlin-1.4.0")
-                implementation(npm("styled-components", "~5.1.1"))
+                implementation(npm("styled-components", "4.4.0"))
                 implementation(npm("inline-style-prefixer", "~6.0.0"))
             }
         }

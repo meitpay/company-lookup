@@ -9,7 +9,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.browser.window
-import kotlinx.coroutines.await
+import kotlinx.coroutines.*
 import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.xhr.FormData
@@ -19,7 +19,7 @@ val jsonClient = HttpClient {
     install(JsonFeature) { serializer = KotlinxSerializer() }
 }
 
-suspend fun fetchAll(): List<Organization> {
+suspend fun getOrganizationList(): List<Organization> {
     return jsonClient.get(endpoint + Organization.path)
 }
 

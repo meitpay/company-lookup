@@ -1,42 +1,28 @@
 # company-lookup
 
-###
-To run the app
+##### To run the app you need to set some values in src/commonMain/resources/application.conf
+See Auth0 and Sentry below on how to obtain these values.
 
-####
-mac/linux
-./gradlew clean build
+${?AUTHENTICATION_ENDPOINT}
+${?API_ENDPOINT}
+${?SENTRY_URL}
+
+
+#### mac/linux
 ./gradlew run
 
-####
-windows
-gradlew.bat clean build
+#### windows
 gradlew.bat run
 
 
-###
-Auth0
-Currently the backend can be secured (disabled in dev)
-If enabled, you'll get a 401 response when trying to access the API.
+### Auth0
+Currently, only the backend can be secured (disabled in dev)
+If enabled, you'll get a 401 response when you're trying to access the API.
 
-To use this you need an auth0 account, you can create a free account at https://auth0.com/
-Follow the quicksteps to create an API.
-
-In our application.conf file we these values we need to get from auth0
-
-auth0 {
-    issuer = ${?AUTHENTICATION_ENDPOINT}
-    audience = ${?API_ENDPOINT}
-}
-
-issuer
-- You'll find in the auth0 interface
-
-audience
-- the identifier/name of your api
-
-Copy the values to the environment variables or replace 
-${?AUTHENTICATION_ENDPOINT} ${?API_ENDPOINT} with the values from auth0
+Head over to https://auth0.com/ and create a free account.
+- Follow the quicksteps to create an API.
+- replace ${?AUTHENTICATION_ENDPOINT} with your auth0 authentication endpoint (issuer) you'll find this value in the auth0 interface
+- replace ${?API_ENDPOINT} with the name of your API (the name you selected when you created the API).
 
 To verify that our API is secured:
 1. set the environment to prod
@@ -47,15 +33,7 @@ curl --request GET \
   --header 'authorization: Bearer YOUR_ACCESS_TOKEN'
   
 
-###
-Sentry
+### Sentry
 Create a free account at https://sentry.io/welcome/
 
-in application.conf we have
-sentry {
-    url = ${SENTRY_URL}
-}
-
-Follow the tutorial from sentry and create a new project.
-Go settings -> your project -> client keys (DSN) and copy the url to your
-environment variables/replace ${SENTRY_URL} with the url
+Follow the tutorial from sentry and create a new project. Go settings -> your project -> client keys (DSN) and copy the url and replace ${?SENTRY_URL} with the url from sentry.

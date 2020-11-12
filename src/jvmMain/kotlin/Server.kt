@@ -29,6 +29,15 @@ fun main(args: Array<String>) {
     ).start(wait = true)
 }
 
+fun log(e: Exception) {
+    val env = ConfigFactory.load().getString("ktor.deployment.environment") == "dev"
+    if (env) {
+        println(e)
+    } else {
+        Sentry.captureException(e)
+    }
+}
+
 fun Application.module() {
     install(Authentication) {
         jwt {
@@ -91,9 +100,8 @@ fun Application.module() {
                         val file = fileIO.getFile("tmp/output.xlsx")
                         call.response.header("Content-Disposition", "attachment; filename=\"${file.name}\"")
                         call.respondFile(file)
-//                        file.delete()
                     } catch (e: Exception) {
-                        Sentry.captureException(e)
+                        log(e)
                     }
                     call.respond(HttpStatusCode.BadRequest)
                 }
@@ -106,7 +114,7 @@ fun Application.module() {
                         file.generateFile(call.receive())
                         call.respond(HttpStatusCode.OK)
                     } catch (e: Exception) {
-                        Sentry.captureException(e)
+                        log(e)
                     }
                     call.respond(HttpStatusCode.BadRequest)
                 }
@@ -136,7 +144,7 @@ fun Application.module() {
                         }
                         call.respond(HttpStatusCode.OK)
                     } catch (e: Exception) {
-                        Sentry.captureException(e)
+                        log(e)
                     }
                     call.respond(HttpStatusCode.BadRequest)
                 }
